@@ -1,11 +1,23 @@
-<div align="center">
+# MGI Movement Register
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Sales Performance and Movement Register dashboard rewritten in React + TypeScript with Vite.
 
-  <h1>Built with AI Studio</h2>
+## Features
+- **Performance Overview**: Tracks aggregate sales metrics including Target Achievement rate, Strike Rate, Total Orders, and IMS Total.
+- **Section Exploration**: Interactive navigation across monthly registers (JAN, FEB, MAR, APR) with individual record counts and achievement percentages.
+- **Real-time Route Search**: Dynamic search filter across routes and daily records within any month register.
+- **Detailed Movement Tables**: Full 16-column register tracking dates, route names, outlets, daily targets, orders, memos, strike rates, LPC, IMS, CIMS, non-execution values, cumulative sales, and achievement rates.
+- **Responsive & Faithful Layout**: Native web application styled to preserve the layout, color palette, and behavior of the original MGI Movement Register.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Running Locally
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+```bash
+# Install dependencies
+npm install
 
-</div>
+# Start Vite development server
+npm run dev
+
+# Build for production
+npm run build
+```

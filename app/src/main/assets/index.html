@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>MGI Movement Register</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#152238;--muted:#718096;--line:#e7edf5;--accent:#1264f5;--accent2:#7c3aed;--good:#0f9d68;--warn:#d97706;--shadow:0 10px 28px rgba(29,52,84,.09)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text)}
+.app{max-width:760px;margin:auto;min-height:100vh;padding:14px 14px 30px}.top{position:sticky;top:0;z-index:5;padding:8px 0 12px;background:linear-gradient(var(--bg) 80%,transparent)}
+.brand{display:flex;align-items:center;justify-content:space-between}.brand h1{font-size:20px;margin:0}.brand small{color:var(--muted)}.icon{border:0;background:#fff;border-radius:14px;padding:11px 13px;box-shadow:var(--shadow);font-size:18px}
+.hero{margin-top:8px;padding:18px;border-radius:24px;color:white;background:linear-gradient(135deg,#1264f5,#6d43e8);box-shadow:0 14px 32px rgba(30,80,190,.22)}
+.hero h2{margin:0 0 5px;font-size:22px}.hero p{margin:0;opacity:.86;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}.stat b{display:block;font-size:21px;margin-top:6px}.stat span{font-size:11px;color:var(--muted)}
+.progress{height:8px;background:#edf2f8;border-radius:99px;overflow:hidden;margin-top:9px}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 9px}.section-title h3{margin:0;font-size:15px}.section-title span{font-size:11px;color:var(--muted)}
+.buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.btn{border:1px solid var(--line);background:#fff;border-radius:17px;padding:14px;text-align:left;box-shadow:var(--shadow);cursor:pointer}.btn strong{display:block}.btn small{color:var(--muted)}.btn.active{border-color:#b9cdfc;background:#f4f8ff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin-top:12px}.panelhead{padding:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.panelhead b{font-size:14px}.search{border:1px solid var(--line);border-radius:12px;padding:9px 11px;width:130px}.tablewrap{overflow:auto;max-height:55vh}table{border-collapse:collapse;width:100%;min-width:950px;font-size:11px}th,td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right}th{position:sticky;top:0;background:#f8fafc;color:#526277}td:nth-child(2),th:nth-child(2){text-align:left}.back{border:0;background:#eef4ff;color:var(--accent);padding:9px 12px;border-radius:11px}.empty{padding:30px;text-align:center;color:var(--muted)}
+footer{margin-top:18px;text-align:center;color:#9aa6b6;font-size:10px}
+@media(min-width:600px){.buttons{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(4,1fr)}}
+</style></head>
+<body><div class="app" id="app"></div>
+<script>
+let D;
+const $=s=>document.querySelector(s);
+const fmt=n=>n==null||n===""?"—":(typeof n==="number"?n.toLocaleString(undefined,{maximumFractionDigits:1}):n);
+const pct=n=>n==null||isNaN(n)?"—":(n*100).toFixed(1)+"%";
+function metrics(sh){
+ const rows=sh.rows, valid=rows.filter(r=>r[1]);
+ const target=valid.reduce((a,r)=>a+(Number(r[3])||0),0), order=valid.reduce((a,r)=>a+(Number(r[4])||0),0);
+ const memo=valid.reduce((a,r)=>a+(Number(r[5])||0),0), outlet=valid.reduce((a,r)=>a+(Number(r[2])||0),0);
+ const ims=valid.reduce((a,r)=>a+(Number(r[8])||0),0);
+ return {days:valid.length,target,order,memo,outlet,ims,achievement:target?order/target:0,strike:outlet?memo/outlet:0};
+}
+function home(){
+ const ms=D.sheets.map(metrics), all={days:0,target:0,order:0,memo:0,outlet:0,ims:0};
+ ms.forEach(m=>Object.keys(all).forEach(k=>all[k]+=m[k]||0));
+ all.achievement=all.target?all.order/all.target:0;all.strike=all.outlet?all.memo/all.outlet:0;
+ $("#app").innerHTML=`<div class="top"><div class="brand"><div><h1>MGI Movement Register</h1><small>2026 • Sales Performance</small></div><button class="icon" onclick="location.reload()">↻</button></div></div>
+ <div class="hero"><h2>Performance Dashboard</h2><p>${D.meta.sr} • ${D.meta.db} • ${D.meta.territory}</p></div>
+ <div class="grid">
+  <div class="stat"><span>Target Achievement</span><b>${pct(all.achievement)}</b><div class="progress"><i style="width:${Math.min(100,all.achievement*100)}%"></i></div></div>
+  <div class="stat"><span>Strike Rate</span><b>${pct(all.strike)}</b><div class="progress"><i style="width:${Math.min(100,all.strike*100)}%"></i></div></div>
+  <div class="stat"><span>Total Order</span><b>${fmt(all.order)}</b><span>Target ${fmt(all.target)}</span></div>
+  <div class="stat"><span>IMS Total</span><b>${fmt(all.ims)}</b><span>${all.days} recorded days</span></div>
+ </div>
+ <div class="section-title"><h3>Register Sections</h3><span>Every Excel sheet as a button</span></div>
+ <div class="buttons">${D.sheets.map((s,i)=>`<button class="btn" onclick="sheet(${i})"><strong>📊 ${s.short}</strong><small>${metrics(s).days} records • ${pct(metrics(s).achievement)} achievement</small></button>`).join("")}</div>
+ <div class="section-title"><h3>Quick summary</h3><span>Monthly achievement</span></div>
+ <div class="panel"><div class="tablewrap"><table><thead><tr><th>Month</th><th>Days</th><th>Target</th><th>Order</th><th>Achievement</th><th>Strike</th></tr></thead><tbody>${D.sheets.map(s=>{let m=metrics(s);return `<tr><td>${s.short}</td><td>${m.days}</td><td>${fmt(m.target)}</td><td>${fmt(m.order)}</td><td>${pct(m.achievement)}</td><td>${pct(m.strike)}</td></tr>`}).join("")}</tbody></table></div></div>
+ <footer>Data embedded from the supplied MGI Movement Register-2026.xlsx</footer>`;
+}
+function sheet(i){
+ const s=D.sheets[i], m=metrics(s);
+ $("#app").innerHTML=`<div class="top"><div class="brand"><button class="back" onclick="home()">← Dashboard</button><div><h1>${s.short} 2026</h1><small>${m.days} records</small></div><span></span></div></div>
+ <div class="grid"><div class="stat"><span>Achievement</span><b>${pct(m.achievement)}</b></div><div class="stat"><span>Strike Rate</span><b>${pct(m.strike)}</b></div><div class="stat"><span>Order</span><b>${fmt(m.order)}</b></div><div class="stat"><span>IMS</span><b>${fmt(m.ims)}</b></div></div>
+ <div class="panel"><div class="panelhead"><b>${s.name}</b><input class="search" id="q" placeholder="Search route…"></div><div class="tablewrap"><table id="tbl"><thead><tr>${D.headers.map(h=>`<th>${h.replaceAll("\\n"," ")}</th>`).join("")}</tr></thead><tbody>${s.rows.map(r=>`<tr>${r.map((v,j)=>`<td>${j===6||j===10||j===12||j===15?pct(v):fmt(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+ $("#q").oninput=e=>{let q=e.target.value.toLowerCase();[...document.querySelectorAll("#tbl tbody tr")].forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?"":"none")};
+}
+fetch("data.json").then(r=>r.json()).then(x=>{D=x;home()});
+</script></body></html>

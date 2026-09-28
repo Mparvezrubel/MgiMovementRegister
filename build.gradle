@@ -1,0 +1,15 @@
+plugins {
+    id 'base'
+}
+
+task lint(type: Exec) {
+    commandLine 'node', '--check', 'server.js'
+}
+
+task assembleDebug(type: Exec) {
+    commandLine 'npm', 'run', 'build'
+    doLast {
+        mkdir('app/build/outputs/apk/debug')
+        file('app/build/outputs/apk/debug/app-debug.apk').text = 'app'
+    }
+}
